@@ -95,6 +95,7 @@ GEM
     erb (5.0.2)
     erubi (1.13.1)
     ffi (1.17.2-aarch64-linux-musl)
+    ffi (1.17.2-x86_64-linux-gnu)
     ffi (1.17.2-x86_64-linux-musl)
     globalid (1.2.1)
       activesupport (>= 6.1)
@@ -133,6 +134,8 @@ GEM
       net-protocol
     nio4r (2.7.4)
     nokogiri (1.18.9-aarch64-linux-musl)
+      racc (~> 1.4)
+    nokogiri (1.18.9-x86_64-linux-gnu)
       racc (~> 1.4)
     nokogiri (1.18.9-x86_64-linux-musl)
       racc (~> 1.4)
@@ -193,6 +196,7 @@ GEM
       io-console (~> 0.5)
     securerandom (0.4.1)
     sqlite3 (2.7.3-aarch64-linux-musl)
+    sqlite3 (2.7.3-x86_64-linux-gnu)
     sqlite3 (2.7.3-x86_64-linux-musl)
     stringio (3.1.7)
     thor (1.4.0)
@@ -207,6 +211,7 @@ GEM
 
 PLATFORMS
   aarch64-linux-musl
+  x86_64-linux
   x86_64-linux-musl
 
 DEPENDENCIES
