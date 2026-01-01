@@ -62,5 +62,6 @@ bin/rails test test/controllers/pricing_controller_test.rb
 ## Maintenance
 
 **Note to Agent**:
+- Whenever you need to run anything related to the applications (especially tests), run them within the docker compose containers.
 - After every task, come back to `GEMINI.md` and ensure it still accurately reflects the project's state, setup instructions, and API documentation.
 - After every application code change, run the tests and fix any problems that comes with it.
