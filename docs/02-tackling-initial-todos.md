@@ -97,7 +97,7 @@ As of this point, I've set up a github respository, and before I do the initial 
 
 ### TODOs
 
-- [v] Setup docker compose with two services - `dynamic-pricing` and `rate-api`.
+- [x] Setup docker compose with two services - `dynamic-pricing` and `rate-api`.
 - [ ] Integrate the API call of `rate-api` into `dynamic-pricing` with url/token configs from env var.
 - [ ] Setup cache layer in the docker compose for `dynamic-pricing` to use.
 - [ ] Implement DB model for the fetched rates.
