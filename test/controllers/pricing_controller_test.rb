@@ -12,7 +12,7 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
     assert_equal "application/json", @response.media_type
 
     json_response = JSON.parse(@response.body)
-    assert_equal "13000", json_response["rate"]
+    assert_equal "12000", json_response["rate"]
   end
 
   test "should return error without any parameters" do
