@@ -31,6 +31,16 @@ bin/rails server
 
 The application will be available at `http://localhost:3000`.
 
+### Using Docker Compose
+
+To start the application using Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+The application will be available at `http://localhost:3000`.
+
 ## Testing
 
 The project uses the standard Rails testing framework (`Minitest`).
