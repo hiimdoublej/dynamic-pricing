@@ -68,6 +68,22 @@ class PricingServiceTest < ActiveSupport::TestCase
     mock_http.verify
   end
 
+  test "raises RateLimitExceeded even if 429 response body is not valid JSON" do
+    mock_response = Net::HTTPTooManyRequests.new("1.1", 429, "Too Many Requests")
+    mock_response.instance_variable_set(:@body, "Too Many Requests") # Non-JSON body
+    def mock_response.body; @body; end
+
+    mock_http = create_mock_http(mock_response, @example_request_attributes)
+
+    Net::HTTP.stub :new, mock_http do
+      assert_raises(PricingService::RateLimitExceeded) do
+        @service.fetch_pricing(@example_request_attributes)
+      end
+    end
+
+    mock_http.verify
+  end
+
   private
 
   def create_mock_http(mock_response, expected_attributes)

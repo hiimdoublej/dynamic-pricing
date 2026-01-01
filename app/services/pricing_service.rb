@@ -37,7 +37,7 @@ class PricingService
       JSON.parse(response.body)
     when Net::HTTPTooManyRequests
       Rails.logger.warn("Pricing API rate limit exceeded: #{response.body}")
-      raise RateLimitExceeded, JSON.parse(response.body)["error"]
+      raise RateLimitExceeded, response.body
     else
       Rails.logger.error("Pricing API error: #{response.code} #{response.body}")
       response.value
