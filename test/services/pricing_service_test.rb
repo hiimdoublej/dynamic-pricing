@@ -4,17 +4,13 @@ require "minitest/mock"
 class PricingServiceTest < ActiveSupport::TestCase
   setup do
     @service = PricingService.new
-  end
-
-  test "fetches pricing successfully" do
-    attributes = [
+    @example_request_attributes = [
       { "period" => "Summer", "hotel" => "FloatingPointResort", "room" => "SingletonRoom" },
       { "period" => "Autumn", "hotel" => "FloatingPointResort", "room" => "SingletonRoom" },
       { "period" => "Winter", "hotel" => "FloatingPointResort", "room" => "SingletonRoom" },
       { "period" => "Spring", "hotel" => "FloatingPointResort", "room" => "SingletonRoom" }
     ]
-
-    expected_response_body = {
+    @example_response_body = {
       "rates" => [
         { "period" => "Summer", "hotel" => "FloatingPointResort", "room" => "SingletonRoom", "rate" => "12000" },
         { "period" => "Autumn", "hotel" => "FloatingPointResort", "room" => "SingletonRoom", "rate" => "28000" },
@@ -22,23 +18,18 @@ class PricingServiceTest < ActiveSupport::TestCase
         { "period" => "Spring", "hotel" => "FloatingPointResort", "room" => "SingletonRoom", "rate" => "73000" }
       ]
     }
+  end
 
+  test "fetches pricing successfully" do
     mock_response = Net::HTTPOK.new("1.1", 200, "OK")
-    mock_response.instance_variable_set(:@body, expected_response_body.to_json)
+    mock_response.instance_variable_set(:@body, @example_response_body.to_json)
     def mock_response.body; @body; end
 
-    mock_http = Minitest::Mock.new
-    mock_http.expect :use_ssl=, nil, [false]
-    mock_http.expect :open_timeout=, nil, [5]
-    mock_http.expect :read_timeout=, nil, [5]
-    mock_http.expect :write_timeout=, nil, [5]
-    mock_http.expect :send_request, mock_response do |method, path, body, headers|
-      method == 'POST' && path == '/pricing' && JSON.parse(body) == { "attributes" => attributes }
-    end
+    mock_http = create_mock_http(mock_response, @example_request_attributes)
 
     Net::HTTP.stub :new, mock_http do
-      result = @service.fetch_pricing(attributes)
-      assert_equal expected_response_body, result
+      result = @service.fetch_pricing(@example_request_attributes)
+      assert_equal @example_response_body, result
     end
 
     mock_http.verify
@@ -49,16 +40,11 @@ class PricingServiceTest < ActiveSupport::TestCase
     mock_response.instance_variable_set(:@body, { "error" => "Rate limit exceeded (1000/day)" }.to_json)
     def mock_response.body; @body; end
 
-    mock_http = Minitest::Mock.new
-    mock_http.expect :use_ssl=, nil, [false]
-    mock_http.expect :open_timeout=, nil, [5]
-    mock_http.expect :read_timeout=, nil, [5]
-    mock_http.expect :write_timeout=, nil, [5]
-    mock_http.expect :send_request, mock_response, [String, String, String, Hash]
+    mock_http = create_mock_http(mock_response, @example_request_attributes)
 
     Net::HTTP.stub :new, mock_http do
       assert_raises(PricingService::RateLimitExceeded) do
-        @service.fetch_pricing([])
+        @service.fetch_pricing(@example_request_attributes)
       end
     end
 
@@ -70,20 +56,33 @@ class PricingServiceTest < ActiveSupport::TestCase
     mock_response.instance_variable_set(:@body, "Internal Server Error")
     def mock_response.body; @body; end
 
-    mock_http = Minitest::Mock.new
-    mock_http.expect :use_ssl=, nil, [false]
-    mock_http.expect :open_timeout=, nil, [5]
-    mock_http.expect :read_timeout=, nil, [5]
-    mock_http.expect :write_timeout=, nil, [5]
-    mock_http.expect :send_request, mock_response, [String, String, String, Hash]
+    mock_http = create_mock_http(mock_response, @example_request_attributes)
 
     Net::HTTP.stub :new, mock_http do
       # Expecting a built-in Net::HTTP exception that corresponds to 5xx errors
       assert_raises(Net::HTTPFatalError, Net::HTTPServerException) do
-        @service.fetch_pricing([])
+        @service.fetch_pricing(@example_request_attributes)
       end
     end
 
     mock_http.verify
+  end
+
+  private
+
+  def create_mock_http(mock_response, expected_attributes)
+    # From https://hub.docker.com/r/tripladev/rate-api
+
+    mock_http = Minitest::Mock.new
+    def mock_http.use_ssl=(*); end
+    def mock_http.open_timeout=(*); end
+    def mock_http.read_timeout=(*); end
+    def mock_http.write_timeout=(*); end
+
+    mock_http.expect :send_request, mock_response do |method, path, body, headers|
+      method == 'POST' && path == '/pricing' && JSON.parse(body) == { "attributes" => expected_attributes }
+    end
+
+    mock_http
   end
 end
