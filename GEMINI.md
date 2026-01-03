@@ -13,32 +13,25 @@ This repository contains a Ruby on Rails API application for a dynamic pricing s
 
 ## Setup and Installation
 
-1.  **Install Dependencies**:
-    ```bash
-    bundle install
-    ```
+All commands should be run via Docker Compose to ensure a consistent environment.
 
-2.  **Database Setup** (Standard Rails procedure):
+1.  **Build and Install Dependencies**:
     ```bash
-    bin/rails db:migrate
+    docker compose build
+    ```
+    (Note: `bundle install` is run as part of the Docker build process. If you need to add gems later, you can run `docker compose run --rm web bundle install`)
+
+2.  **Database Setup**:
+    ```bash
+    docker compose run --rm web bin/rails db:migrate
     ```
 
 ## Running the Application
 
-To start the server:
+To start the application and services:
 
 ```bash
-bin/rails server
-```
-
-The application will be available at `http://localhost:3000`.
-
-### Using Docker Compose
-
-To start the application using Docker Compose:
-
-```bash
-docker compose up --build
+docker compose up
 ```
 
 The application will be available at `http://localhost:3000`.
@@ -50,13 +43,13 @@ The project uses the standard Rails testing framework (`Minitest`).
 To run the full test suite:
 
 ```bash
-bin/rails test
+docker compose run --rm web bin/rails test
 ```
 
 To run specifically the pricing controller tests:
 
 ```bash
-bin/rails test test/controllers/pricing_controller_test.rb
+docker compose run --rm web bin/rails test test/controllers/pricing_controller_test.rb
 ```
 
 ## Maintenance
