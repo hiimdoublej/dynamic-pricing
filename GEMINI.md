@@ -62,6 +62,9 @@ bin/rails test test/controllers/pricing_controller_test.rb
 ## Maintenance
 
 **Note to Agent**:
+- Whenever a new Gemini CLI session is started, switch to a new worktree by `git worktree add ./.gemini-session-<GEMINI_SESSION_ID> -b gemini-session-<GEMINI_SESSION_ID>` to avoid conflicts with other gemini CLI sessions.
+- When resolving conflicts, make sure to read the commits from both sides before coming up with resolution ideas.
+- After a code change, make a commit with sensible commit messages. The commit title should start with "Gemini: ".
 - Whenever you need to run anything related to the applications (especially tests), run them within the docker compose containers.
 - After every task, come back to `GEMINI.md` and ensure it still accurately reflects the project's state, setup instructions, and API documentation.
 - After every application code change, run the tests and fix any problems that comes with it.
