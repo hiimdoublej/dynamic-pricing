@@ -10,6 +10,7 @@ This repository contains a Ruby on Rails API application for a dynamic pricing s
 - **Server**: Puma
 - **External Services**:
     - **pricing-api**: A Flask-based API for external rate lookups, running on port 8080.
+    - **redis**: Redis 7.0 for caching, running on port 6379.
 
 ## Setup and Installation
 
