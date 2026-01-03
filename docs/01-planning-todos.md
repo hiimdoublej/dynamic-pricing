@@ -30,7 +30,7 @@ So far we've been through the core requirements, it is now time to write them do
 - [ ] Setup docker compose with two services - `dynamic-pricing` and `rate-api`.
 - [ ] Integrate the API call of `rate-api` into `dynamic-pricing` with url/token configs from env var.
 - [ ] Setup cache layer in the docker compose for `dynamic-pricing` to use.
-- [x] Implement DB model for the fetched rates.
+- [ ] Implement DB model for the fetched rates.
 - [ ] Implement rate fetching cronjob.
 - [ ] Implement controller logic.
 - [ ] Add tests for `dynamic-pricing`, mocking the `rate-api` service responses.
