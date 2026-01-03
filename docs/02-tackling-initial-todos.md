@@ -113,7 +113,7 @@ See PR #9.
 
 See PR #10.
 
-- [ ] Implement rate fetching cronjob.
+- [x] Implement rate fetching cronjob.
 - [ ] Implement controller logic.
 - [ ] Add tests for `dynamic-pricing`, mocking the `rate-api` service responses.
 
