@@ -224,7 +224,8 @@ DEPENDENCIES
   listen (~> 3.3)
   puma (>= 5.0)
   rails (~> 7.1.5, >= 7.1.5.2)
-  redis (>= 4.0.1)
+  redis (= 5.4.1)
+  redis-client (= 0.26.2)
   sqlite3 (>= 1.4)
   tzinfo-data
 
