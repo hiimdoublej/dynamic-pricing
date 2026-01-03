@@ -105,8 +105,14 @@ See PRs #1 and #2.
 
 See PR #3.
 
-- [ ] Setup cache layer in the docker compose for `dynamic-pricing` to use.
-- [ ] Implement DB model for the fetched rates.
+- [x] Setup cache layer in the docker compose for `dynamic-pricing` to use.
+
+See PR #9.
+
+- [x] Implement DB model for the fetched rates.
+
+See PR #10.
+
 - [ ] Implement rate fetching cronjob.
 - [ ] Implement controller logic.
 - [ ] Add tests for `dynamic-pricing`, mocking the `rate-api` service responses.
