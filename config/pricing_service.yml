@@ -1,0 +1,13 @@
+default: &default
+  host: <%= ENV.fetch("PRICING_API_HOST", "http://localhost:8080") %>
+  token: <%= ENV.fetch("PRICING_API_TOKEN", "") %>
+  timeout: <%= ENV.fetch("PRICING_API_TIMEOUT", 5) %>
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
