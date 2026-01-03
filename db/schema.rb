@@ -11,14 +11,13 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.1].define(version: 2026_01_03_053446) do
-  create_table "prices", force: :cascade do |t|
+  create_table "room_prices", force: :cascade do |t|
     t.string "period", null: false
     t.string "hotel", null: false
     t.string "room", null: false
-    t.integer "amount", null: false
-    t.datetime "created_at", null: false
+    t.integer "price", null: false
     t.datetime "updated_at", null: false
-    t.index ["period", "hotel", "room"], name: "index_prices_on_period_and_hotel_and_room", unique: true
+    t.index ["period", "hotel", "room"], name: "index_room_prices_on_period_and_hotel_and_room", unique: true
   end
 
 end

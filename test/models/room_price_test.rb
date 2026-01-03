@@ -1,8 +1,8 @@
 require "test_helper"
 
-class PriceTest < ActiveSupport::TestCase
+class RoomPriceTest < ActiveSupport::TestCase
   def setup
-    @price = Price.new(period: "Summer", hotel: "FloatingPointResort", room: "SingletonRoom", amount: 10000)
+    @price = RoomPrice.new(period: "Summer", hotel: "FloatingPointResort", room: "SingletonRoom", price: 10000)
   end
 
   test "should be valid" do
@@ -24,8 +24,8 @@ class PriceTest < ActiveSupport::TestCase
     assert_not @price.valid?
   end
 
-  test "should require amount" do
-    @price.amount = nil
+  test "should require price" do
+    @price.price = nil
     assert_not @price.valid?
   end
 
