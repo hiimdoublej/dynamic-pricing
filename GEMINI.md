@@ -28,11 +28,11 @@ All commands should be run via Docker Compose to ensure a consistent environment
     ```bash
     docker compose build
     ```
-    (Note: `bundle install` is run as part of the Docker build process. If you need to add gems later, you can run `docker compose run --rm web bundle install`)
+    (Note: `bundle install` is run as part of the Docker build process. If you need to add gems later, you can run `docker compose run --rm app bundle install`)
 
 2.  **Database Setup**:
     ```bash
-    docker compose run --rm web bin/rails db:migrate
+    docker compose run --rm app bin/rails db:migrate
     ```
 
 ## Running the Application
@@ -52,11 +52,21 @@ The project uses the standard Rails testing framework (`Minitest`).
 To run the full test suite:
 
 ```bash
-docker compose run --rm web bin/rails test
+docker compose run --rm app bin/rails test
 ```
 
 To run specifically the pricing controller tests:
 
 ```bash
-docker compose run --rm web bin/rails test test/controllers/pricing_controller_test.rb
+docker compose run --rm app bin/rails test test/controllers/pricing_controller_test.rb
+```
+
+## Linting
+
+The project uses RuboCop for code analysis and formatting.
+
+To run RuboCop:
+
+```bash
+docker compose run --rm app bundle exec rubocop
 ```
