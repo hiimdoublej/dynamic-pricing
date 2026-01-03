@@ -114,6 +114,9 @@ See PR #9.
 See PR #10.
 
 - [x] Implement rate fetching cronjob.
+
+  - The rake task can be run via: `docker compose run --rm app bin/rails pricing:fetch`
+
 - [ ] Implement controller logic.
 - [ ] Add tests for `dynamic-pricing`, mocking the `rate-api` service responses.
 
