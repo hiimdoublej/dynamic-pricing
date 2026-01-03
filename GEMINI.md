@@ -14,7 +14,7 @@ This repository contains a Ruby on Rails API application for a dynamic pricing s
 
 - **Framework**: Ruby on Rails 7.1.5
 - **Ruby Version**: 3.2.6
-- **Database**: SQLite3 (Standard Rails default, though currently not heavily used for the logic shown)
+- **Database**: SQLite3
 - **Server**: Puma
 - **External Services**:
     - **pricing-api**: A Flask-based API for external rate lookups, running on port 8080.
