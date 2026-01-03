@@ -117,6 +117,6 @@ See PR #10.
 
   - See PR #15
 
-- [ ] Implement controller logic.
+- [x] Implement controller logic.
 - [ ] Add tests for `dynamic-pricing`, mocking the `rate-api` service responses.
 

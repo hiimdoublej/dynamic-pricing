@@ -1,18 +1,65 @@
 require "test_helper"
 
 class PricingControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    @period = "Summer"
+    @hotel = "FloatingPointResort"
+    @room = "SingletonRoom"
+    @price = 12000
+
+    # Ensure clean state for the specific combination we use in happy path
+    RoomPrice.where(period: @period, hotel: @hotel, room: @room).destroy_all
+    
+    # Create a fresh price for the happy path
+    @room_price = RoomPrice.create!(
+      period: @period,
+      hotel: @hotel,
+      room: @room,
+      price: @price,
+      updated_at: Time.current
+    )
+  end
+
   test "should get pricing with all parameters" do
     get pricing_url, params: {
-      period: "Summer",
-      hotel: "FloatingPointResort",
-      room: "SingletonRoom"
+      period: @period,
+      hotel: @hotel,
+      room: @room
     }
 
     assert_response :success
     assert_equal "application/json", @response.media_type
 
     json_response = JSON.parse(@response.body)
-    assert_equal "12000", json_response["rate"]
+    assert_equal @price.to_s, json_response["rate"]
+  end
+
+  test "should return error when price is not found" do
+    # Requesting a combination that doesn't exist (assuming Winter is valid but not in DB)
+    get pricing_url, params: {
+      period: "Winter",
+      hotel: @hotel,
+      room: @room
+    }
+
+    assert_response :not_found
+    json_response = JSON.parse(@response.body)
+    assert_equal "Price not found or expired", json_response["error"]
+  end
+
+  test "should return error when price is expired" do
+    # Update the existing price to be old
+    @room_price.update!(updated_at: 6.minutes.ago)
+
+    get pricing_url, params: {
+      period: @period,
+      hotel: @hotel,
+      room: @room
+    }
+
+    assert_response :not_found
+    json_response = JSON.parse(@response.body)
+    assert_equal "Price not found or expired", json_response["error"]
   end
 
   test "should return error without any parameters" do
@@ -42,8 +89,8 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
   test "should reject invalid period" do
     get pricing_url, params: {
       period: "summer-2024",
-      hotel: "FloatingPointResort",
-      room: "SingletonRoom"
+      hotel: @hotel,
+      room: @room
     }
 
     assert_response :bad_request
@@ -55,9 +102,9 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
 
   test "should reject invalid hotel" do
     get pricing_url, params: {
-      period: "Summer",
+      period: @period,
       hotel: "InvalidHotel",
-      room: "SingletonRoom"
+      room: @room
     }
 
     assert_response :bad_request
@@ -69,8 +116,8 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
 
   test "should reject invalid room" do
     get pricing_url, params: {
-      period: "Summer",
-      hotel: "FloatingPointResort",
+      period: @period,
+      hotel: @hotel,
       room: "InvalidRoom"
     }
 

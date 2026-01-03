@@ -10,8 +10,23 @@ class PricingController < ApplicationController
     hotel  = params[:hotel]
     room   = params[:room]
 
-    # TODO: Start to implement here
-    render json: { rate: "12000" }
+    cache_key = "pricing:#{period}:#{hotel}:#{room}"
+    price = Rails.cache.fetch(cache_key, expires_in: 1.minute) do
+      record = RoomPrice.find_by(period: period, hotel: hotel, room: room)
+      
+      # Ensure the rate is not older than 5 minutes
+      if record && record.updated_at > 5.minutes.ago
+        record.price
+      else
+        nil
+      end
+    end
+
+    if price
+      render json: { rate: price.to_s }
+    else
+      render json: { error: "Price not found or expired" }, status: :not_found
+    end
   end
 
   private
