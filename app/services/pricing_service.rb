@@ -15,9 +15,10 @@ class PricingService
   private
 
   def send_request(method, path, body = {}, headers = {})
-    uri = URI(ENV.fetch('PRICING_API_HOST', 'http://localhost:8080'))
-    token = ENV.fetch('PRICING_API_TOKEN', '')
-    timeout = ENV.fetch('PRICING_API_TIMEOUT', 5).to_i
+    config = Rails.application.config_for(:pricing_service)
+    uri = URI(config[:host])
+    token = config[:token]
+    timeout = config[:timeout].to_i
 
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = uri.scheme == 'https'
