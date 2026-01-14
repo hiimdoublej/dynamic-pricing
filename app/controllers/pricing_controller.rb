@@ -7,10 +7,11 @@ class PricingController < ApplicationController
 
   def index
     @record = find_record
+    price = @record.is_a?(RoomPrice) ? @record.price : @record
 
-    if @record
-      set_cache_control_headers
-      render json: { rate: @record.price.to_s }
+    if price
+      set_cache_control_headers if @record.is_a?(RoomPrice)
+      render json: { rate: price.to_s }
     else
       render json: { error: "Price not found or expired" }, status: :not_found
     end
@@ -21,14 +22,13 @@ class PricingController < ApplicationController
   def find_record
     cache_key = "pricing:#{params[:period]}:#{params[:hotel]}:#{params[:room]}"
     cached_price = Rails.cache.read(cache_key)
+    return cached_price if cached_price
 
     record = RoomPrice.find_by(period: params[:period], hotel: params[:hotel], room: params[:room])
     return nil unless record && record.updated_at > 5.minutes.ago
 
-    unless cached_price
-      expires_in = 5.minutes - (Time.current - record.updated_at)
-      Rails.cache.write(cache_key, record.price, expires_in: expires_in)
-    end
+    expires_in = 5.minutes - (Time.current - record.updated_at)
+    Rails.cache.write(cache_key, record.price, expires_in: expires_in)
 
     record
   end
