@@ -6,32 +6,38 @@ class PricingController < ApplicationController
   before_action :validate_params
 
   def index
-    period = params[:period]
-    hotel  = params[:hotel]
-    room   = params[:room]
+    @record = find_record
 
-    cache_key = "pricing:#{period}:#{hotel}:#{room}"
-    price = Rails.cache.read(cache_key)
-
-    unless price
-      record = RoomPrice.find_by(period: period, hotel: hotel, room: room)
-
-      # Ensure the rate is not older than 5 minutes
-      if record && record.updated_at > 5.minutes.ago
-        price = record.price
-        expires_in = 5.minutes - (Time.current - record.updated_at)
-        Rails.cache.write(cache_key, price, expires_in: expires_in)
-      end
-    end
-
-    if price
-      render json: { rate: price.to_s }
+    if @record
+      set_cache_control_headers
+      render json: { rate: @record.price.to_s }
     else
       render json: { error: "Price not found or expired" }, status: :not_found
     end
   end
 
   private
+
+  def find_record
+    cache_key = "pricing:#{params[:period]}:#{params[:hotel]}:#{params[:room]}"
+    cached_price = Rails.cache.read(cache_key)
+
+    record = RoomPrice.find_by(period: params[:period], hotel: params[:hotel], room: params[:room])
+    return nil unless record && record.updated_at > 5.minutes.ago
+
+    unless cached_price
+      expires_in = 5.minutes - (Time.current - record.updated_at)
+      Rails.cache.write(cache_key, record.price, expires_in: expires_in)
+    end
+
+    record
+  end
+
+  def set_cache_control_headers
+    max_age = [0, (@record.updated_at + 5.minutes - Time.current).to_i].max
+    s_maxage = max_age / 2
+    response.headers["Cache-Control"] = "public, max-age=#{max_age}, s-maxage=#{s_maxage}"
+  end
 
   def validate_params
     # Validate required parameters
@@ -40,6 +46,10 @@ class PricingController < ApplicationController
     end
 
     # Validate parameter values
+    validate_parameter_values
+  end
+
+  def validate_parameter_values
     unless VALID_PERIODS.include?(params[:period])
       return render json: { error: "Invalid period. Must be one of: #{VALID_PERIODS.join(', ')}" }, status: :bad_request
     end
