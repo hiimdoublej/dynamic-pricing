@@ -10,9 +10,12 @@ class PricingRakeTest < ActiveSupport::TestCase
     Rake::Task["pricing:fetch"].reenable
   end
 
-  test "pricing:fetch enqueues FetchPricingJob" do
-    assert_enqueued_with(job: FetchPricingJob) do
+  test "pricing:fetch executes FetchPricingJob immediately" do
+    called = false
+    FetchPricingJob.stub :perform_now, -> { called = true } do
       Rake::Task["pricing:fetch"].invoke
     end
+
+    assert called
   end
 end
