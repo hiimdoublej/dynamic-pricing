@@ -35,7 +35,7 @@ class PricingController < ApplicationController
 
   def set_cache_control_headers
     s_maxage = [0, (@record.updated_at + 5.minutes - Time.current).to_i].max
-    max_age = s_maxage / 2
+    max_age = [(s_maxage / 2), 60].min
     response.headers["Cache-Control"] = "public, max-age=#{max_age}, s-maxage=#{s_maxage}"
   end
 

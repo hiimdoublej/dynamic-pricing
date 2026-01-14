@@ -48,7 +48,7 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
       actual_max_age = cache_control.match(/max-age=(\d+)/)[1].to_i
       actual_s_maxage = cache_control.match(/s-maxage=(\d+)/)[1].to_i
 
-      assert_in_delta expected_s_maxage / 2, actual_max_age, 1
+      assert_in_delta [expected_s_maxage / 2, 60].min, actual_max_age, 1
       assert_in_delta expected_s_maxage, actual_s_maxage, 1
     end
   end
