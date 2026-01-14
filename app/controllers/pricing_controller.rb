@@ -11,14 +11,16 @@ class PricingController < ApplicationController
     room   = params[:room]
 
     cache_key = "pricing:#{period}:#{hotel}:#{room}"
-    price = Rails.cache.fetch(cache_key, expires_in: 1.minute) do
+    price = Rails.cache.read(cache_key)
+
+    unless price
       record = RoomPrice.find_by(period: period, hotel: hotel, room: room)
-      
+
       # Ensure the rate is not older than 5 minutes
       if record && record.updated_at > 5.minutes.ago
-        record.price
-      else
-        nil
+        price = record.price
+        expires_in = 5.minutes - (Time.current - record.updated_at)
+        Rails.cache.write(cache_key, price, expires_in: expires_in)
       end
     end
 
