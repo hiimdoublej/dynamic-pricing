@@ -6,11 +6,10 @@ class PricingController < ApplicationController
   before_action :validate_params
 
   def index
-    @record = find_record
-    price = @record.is_a?(RoomPrice) ? @record.price : @record
+    price, @expires_at = find_record
 
     if price
-      set_cache_control_headers if @record.is_a?(RoomPrice)
+      set_cache_control_headers
       render json: { rate: price.to_s }
     else
       render json: { error: "Price not found or expired" }, status: :not_found
@@ -21,20 +20,23 @@ class PricingController < ApplicationController
 
   def find_record
     cache_key = "pricing:#{params[:period]}:#{params[:hotel]}:#{params[:room]}"
-    cached_price = Rails.cache.read(cache_key)
-    return cached_price if cached_price
+    cached_data = Rails.cache.read(cache_key)
+    return cached_data if cached_data
 
     record = RoomPrice.find_by(period: params[:period], hotel: params[:hotel], room: params[:room])
-    return nil unless record && record.updated_at > 5.minutes.ago
+    return [nil, nil] unless record && record.updated_at > 5.minutes.ago
 
-    expires_in = 5.minutes - (Time.current - record.updated_at)
-    Rails.cache.write(cache_key, record.price, expires_in: expires_in)
+    expires_at = record.updated_at + 5.minutes
+    data = [record.price, expires_at]
+    Rails.cache.write(cache_key, data, expires_in: (expires_at - Time.current))
 
-    record
+    data
   end
 
   def set_cache_control_headers
-    s_maxage = [0, (@record.updated_at + 5.minutes - Time.current).to_i].max
+    return unless @expires_at
+
+    s_maxage = [0, (@expires_at - Time.current).to_i].max
     max_age = [(s_maxage / 2), 60].min
     response.headers["Cache-Control"] = "public, max-age=#{max_age}, s-maxage=#{s_maxage}"
   end
