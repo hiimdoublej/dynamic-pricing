@@ -11,9 +11,17 @@ class FetchPricingJob < ApplicationJob
 
     return unless response && response["rates"]
 
-    response["rates"].each do |rate_data|
-      RoomPrice.find_or_initialize_by(period: rate_data["period"], hotel: rate_data["hotel"],
-                                      room: rate_data["room"]).update!(price: rate_data["rate"])
+    attributes = response["rates"].map do |rate_data|
+      {
+        period: rate_data["period"],
+        hotel: rate_data["hotel"],
+        room: rate_data["room"],
+        price: rate_data["rate"]
+      }
     end
+
+    # rubocop:disable Rails/SkipsModelValidations
+    RoomPrice.upsert_all(attributes, unique_by: [:period, :hotel, :room]) if attributes.any?
+    # rubocop:enable Rails/SkipsModelValidations
   end
 end
