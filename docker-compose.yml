@@ -7,6 +7,19 @@ services:
       - .:/rails
     env_file:
       - .env
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+  sidekiq:
+    build: .
+    command: bundle exec sidekiq
+    volumes:
+      - .:/rails
+    env_file:
+      - .env
+    environment:
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       - redis
   pricing-api:

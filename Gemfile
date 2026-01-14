@@ -15,6 +15,10 @@ gem "puma", ">= 5.0"
 gem "redis", "5.4.1"
 gem "redis-client", "0.26.2"
 
+# Sidekiq for background jobs
+gem "sidekiq"
+gem "sidekiq-cron"
+
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
 
@@ -45,4 +49,3 @@ group :development do
   # Live reloading for development
   gem "listen", "~> 3.3"
 end
-
