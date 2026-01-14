@@ -53,7 +53,6 @@ To run the full test suite:
 
 ```bash
 docker compose run --rm app bin/rails test
-docker compose run --rm app bin/rails test
 ```
 
 To run specifically the pricing controller tests:
@@ -70,5 +69,4 @@ To run RuboCop:
 
 ```bash
 docker compose run --rm app bundle exec rubocop
-docker compose run --rm app bin/rails test test/controllers/pricing_controller_test.rb
 ```
