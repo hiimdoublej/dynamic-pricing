@@ -20,6 +20,7 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_equal "application/json", @response.media_type
+
     json_response = JSON.parse(@response.body)
     assert_equal @price.to_s, json_response["rate"]
   end
@@ -72,6 +73,7 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
     get pricing_url
     assert_response :bad_request
     assert_equal "application/json", @response.media_type
+
     json_response = JSON.parse(@response.body)
     assert_includes json_response["error"], "Missing required parameters"
   end
@@ -80,6 +82,7 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
     get_pricing("", "", "")
     assert_response :bad_request
     assert_equal "application/json", @response.media_type
+
     json_response = JSON.parse(@response.body)
     assert_includes json_response["error"], "Missing required parameters"
   end
@@ -88,6 +91,7 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
     get_pricing("summer-2024", @hotel, @room)
     assert_response :bad_request
     assert_equal "application/json", @response.media_type
+
     json_response = JSON.parse(@response.body)
     assert_includes json_response["error"], "Invalid period"
   end
@@ -96,6 +100,7 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
     get_pricing(@period, "InvalidHotel", @room)
     assert_response :bad_request
     assert_equal "application/json", @response.media_type
+
     json_response = JSON.parse(@response.body)
     assert_includes json_response["error"], "Invalid hotel"
   end
@@ -104,6 +109,7 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
     get_pricing(@period, @hotel, "InvalidRoom")
     assert_response :bad_request
     assert_equal "application/json", @response.media_type
+
     json_response = JSON.parse(@response.body)
     assert_includes json_response["error"], "Invalid room"
   end
