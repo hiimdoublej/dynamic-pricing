@@ -44,12 +44,12 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
       get_pricing(@period, @hotel, @room)
 
       cache_control = @response.headers["Cache-Control"]
-      expected_max_age = (5.minutes - (now - @room_price.updated_at)).to_i
+      expected_s_maxage = (5.minutes - (now - @room_price.updated_at)).to_i
       actual_max_age = cache_control.match(/max-age=(\d+)/)[1].to_i
       actual_s_maxage = cache_control.match(/s-maxage=(\d+)/)[1].to_i
 
-      assert_in_delta expected_max_age, actual_max_age, 1
-      assert_in_delta expected_max_age / 2, actual_s_maxage, 1
+      assert_in_delta expected_s_maxage / 2, actual_max_age, 1
+      assert_in_delta expected_s_maxage, actual_s_maxage, 1
     end
   end
 
