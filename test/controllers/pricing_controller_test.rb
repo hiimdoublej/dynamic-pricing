@@ -19,6 +19,7 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
     get_pricing(@period, @hotel, @room)
 
     assert_response :success
+    assert_equal "application/json", @response.media_type
     assert_equal @price.to_s, JSON.parse(@response.body)["rate"]
   end
 
@@ -53,32 +54,52 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should return error when price is not found or expired" do
+  test "should return error when price is not found" do
     get_pricing("Winter", @hotel, @room)
     assert_response :not_found
+    assert_equal "application/json", @response.media_type
+  end
 
+  test "should return error when price is expired" do
     @room_price.update!(updated_at: 6.minutes.ago)
     get_pricing(@period, @hotel, @room)
     assert_response :not_found
+    assert_equal "application/json", @response.media_type
   end
 
-  test "should return error for missing or empty parameters" do
+  test "should return error for missing parameters" do
     get pricing_url
     assert_response :bad_request
-
-    get_pricing("", "", "")
-    assert_response :bad_request
+    assert_equal "application/json", @response.media_type
+    assert_includes JSON.parse(@response.body)["error"], "Missing required parameters"
   end
 
-  test "should reject invalid parameter values" do
+  test "should return error for empty parameters" do
+    get_pricing("", "", "")
+    assert_response :bad_request
+    assert_equal "application/json", @response.media_type
+    assert_includes JSON.parse(@response.body)["error"], "Missing required parameters"
+  end
+
+  test "should reject invalid period" do
     get_pricing("summer-2024", @hotel, @room)
     assert_response :bad_request
+    assert_equal "application/json", @response.media_type
+    assert_includes JSON.parse(@response.body)["error"], "Invalid period"
+  end
 
+  test "should reject invalid hotel" do
     get_pricing(@period, "InvalidHotel", @room)
     assert_response :bad_request
+    assert_equal "application/json", @response.media_type
+    assert_includes JSON.parse(@response.body)["error"], "Invalid hotel"
+  end
 
+  test "should reject invalid room" do
     get_pricing(@period, @hotel, "InvalidRoom")
     assert_response :bad_request
+    assert_equal "application/json", @response.media_type
+    assert_includes JSON.parse(@response.body)["error"], "Invalid room"
   end
 
   private
